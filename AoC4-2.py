@@ -1,79 +1,80 @@
-# file = open("AoC3-1-test.txt")
-file = open("AoC3-1-puzz.txt")
-banks = file.read()
+def check(x, y):
+    if x >= 0 and x < w and y >= 0 and y < h and rolls[x][y] == "@":
+        return True
+    else:
+        return False
 
 
-def find_largest_12digit(s):
-    """
-    Find the largest 12-digit number by selecting digits from left to right.
+# file = open("AoC4-1-test.txt")
+file = open("AoC4-1-puzz.txt")
+rolls = file.read().splitlines()
 
-    Strategy: Use a greedy approach with lookahead to maximize the value.
-    For each position in the result, choose the largest digit available
-    while ensuring we have enough remaining digits to complete 12 digits.
-    """
-    n = len(s)
-    if n < 12:
-        return None  # Not enough digits
+h = len(rolls)
+w = len(rolls[0])
+newmap = ""
+counter = 0
 
-    result = []
-    start = 0
+for x in range(w):
+    for y in range(h):
+        if rolls[x][y] == ".":
+            # print(x, y, "position is empty marking .")
+            newmap += "."
+            continue
 
-    for pos in range(12):
-        # How many more digits do we need after this one?
-        remaining_needed = 12 - pos - 1
+        neighbours = 0
+        # check N
+        if check(x, y - 1):
+            neighbours += 1
+        # check NE
+        if check(x + 1, y - 1):
+            neighbours += 1
+        # check E
+        if check(x + 1, y):
+            neighbours += 1
+        # check SE
+        if check(x + 1, y + 1):
+            neighbours += 1
+        # check S
+        if check(x, y + 1):
+            neighbours += 1
+        # check SW
+        if check(x - 1, y + 1):
+            neighbours += 1
+        # check W
+        if check(x - 1, y):
+            neighbours += 1
+        # check NW
+        if check(x - 1, y - 1):
+            neighbours += 1
 
-        # Latest position we can pick from (must leave enough digits)
-        latest_pos = n - remaining_needed - 1
+        if neighbours < 4:
+            # print(x, y, "neighbours = ", neighbours, " marking x")
+            newmap += "x"
+            counter += 1
+        else:
+            # print(x, y, "neighbours = ", neighbours, " marking @")
+            newmap += "@"
 
-        # Find the maximum digit in the valid range
-        max_digit = max(s[start : latest_pos + 1])
+# for i in range(h):
+#     for j in range(w):
+#         print(newmap[i * w + j], end="")
+#     print("")
 
-        # Find the first occurrence of this max digit
-        for i in range(start, latest_pos + 1):
-            if s[i] == max_digit:
-                result.append(s[i])
-                start = i + 1
-                break
+print(counter)
 
-    return "".join(result)
+# The forklifts can only access a roll of paper if there are fewer than four rolls of paper in the eight adjacent positions.
 
-
-def process_data(data):
-    """Process multiple lines of digit sequences."""
-    lines = [line.strip() for line in data.strip().split("\n") if line.strip()]
-    results = []
-
-    print("Processing each sequence:")
-    print("-" * 50)
-
-    for line in lines:
-        largest = find_largest_12digit(line)
-        if largest:
-            results.append(int(largest))
-            print(f"Input:  {line}")
-            print(f"Output: {largest}")
-            print()
-
-    total = sum(results)
-    print("-" * 50)
-    print(f"Individual results: {' + '.join(map(str, results))}")
-    print(f"Total sum: {total}")
-
-    return results, total
-
-
-# Run the solution
-results, total = process_data(banks)
-
-
-# part 1 test answer "The total output joltage is now much larger:
-# 987654321111
-# 811111111119
-# 434234234278
-# 888911112111
-# ------------
-# 3121910778619
-#
-
-# 144576682019514 is too low
-# 170147128753455
+# part 1 test answer:
+# there are 13 x's
+"""
+..xx.xx@x.
+x@@.@.@.@@
+@@@@@.x.@@
+@.@@@@..@.
+x@.@@@@.@x
+.@@@@@@@.@
+.@.@.@.@@@
+x.@@@.@@@@
+.@@@@@@@@.
+x.x.@@@.x.
+"""
